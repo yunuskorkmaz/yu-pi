@@ -17,7 +17,7 @@ namespace Api.Controllers
         /// <response code="200">Create access_token</response>
         /// <response code="400">Return another error</response>
         /// <response code="422">Model validation error</response>
-        [HttpPost]
+        [HttpPost("/")]
         [ProducesResponseType(typeof(LoginResponse), 200)]
         public IActionResult Index(LoginRequest loginModel)
         {

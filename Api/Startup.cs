@@ -36,6 +36,8 @@ namespace App.Api
             services.AddJwtAuth(Configuration);
             services.AddAppDependencyInjection();
 
+        
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -46,7 +48,9 @@ namespace App.Api
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseHttpsRedirection();
+            app.UseSpaFallback(new SpaFallbackOptions(){
+
+            });
 
             app.UseSwagger();
             app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "AMS API V1"));
@@ -56,7 +60,6 @@ namespace App.Api
             app.UseAuthorization();
 
             app.UseAuthentication();
-            app.UseAuthorization();
             app.UseExceptionMiddleware();
 
             app.UseEndpoints(endpoints =>

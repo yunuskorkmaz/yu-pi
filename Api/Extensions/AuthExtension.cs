@@ -1,3 +1,4 @@
+using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -14,18 +15,13 @@ namespace Api.Extensions
             {
                 x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                 x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-            }).AddJwtBearer(option =>
-            {
-                option.TokenValidationParameters = new TokenValidationParameters
-                {
-                    ValidateAudience = true,
-                    ValidateIssuer = true,
-                    ValidateLifetime = true,
-                    ValidateIssuerSigningKey = true,
-                    ValidIssuer = configuration["Token:Issuer"],
-                    ValidAudience = configuration["Token:Audience"],
-                    IssuerSigningKey = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(configuration["Token:SecurityKey"])),
-                    ClockSkew = System.TimeSpan.Zero
+            }).AddJwtBearer(config => {
+                config.RequireHttpsMetadata = false;
+                
+                config.TokenValidationParameters = new TokenValidationParameters(){
+                    ValidIssuer = configuration["jwt:issuer"],
+                    ValidAudience = configuration["jwt:issuer"],
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["jwt:key"]))
                 };
             });
             return services;
