@@ -1,0 +1,23 @@
+{
+  "name": "yu-pi",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start:server": "cd src/server/Api && dotnet watch run",
+    "start:client": "cd src/client && npm start",
+    "preinstall": "cd src/client && npm install",
+    "build": "cd src/client && npm build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yunuskorkmaz/yu-pi.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/yunuskorkmaz/yu-pi/issues"
+  },
+  "homepage": "https://github.com/yunuskorkmaz/yu-pi#readme"
+}
