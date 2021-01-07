@@ -26,13 +26,13 @@ namespace App.Api
 
         public IConfiguration Configuration { get; }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddHttpClient();
             services.AddControllersWithValidationFilter().AddValidation();
-            services.AddSpaStaticFiles(option => {
-                option.RootPath = "../../client/build";
+            services.AddSpaStaticFiles(option =>
+            {
+                option.RootPath = "wwwroot";
             });
             services.AddAppContext(Configuration);
             services.AddSwagger();
@@ -42,15 +42,12 @@ namespace App.Api
 
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
             }
-
-            app.UseHttpsRedirection();
 
             app.UseStaticFiles();
             app.UseSpaStaticFiles();
@@ -64,17 +61,26 @@ namespace App.Api
 
             app.UseAuthentication();
             app.UseAuthorization();
-            app.UseSpa(spa => {
-                spa.Options.SourcePath = "../../client";
-                if(env.IsDevelopment()){
-                    spa.UseReactDevelopmentServer(npmScript: "start");
-                }
-            });
+            
             app.UseExceptionMiddleware();
 
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+            });
+
+            app.UseSpa(spa =>
+            {
+
+                if (env.IsDevelopment())
+                {
+                    spa.Options.SourcePath = "../../client";
+                    spa.UseReactDevelopmentServer(npmScript: "start");
+                }
+                else
+                {
+                    spa.Options.SourcePath = "wwwroot";
+                }
             });
         }
     }

@@ -7,7 +7,9 @@
     "start:server": "cd src/server/Api && dotnet watch run",
     "start:client": "cd src/client && npm start",
     "preinstall": "cd src/client && npm install",
-    "build": "cd src/client && npm run build"
+    "build": "cd src/client && npm run build && cd ../../ && npm run postbuild",
+    "test": "cd src/client &&  cd ../../ && npm run postbuild",
+    "postbuild": "rimraf src/server/Api/wwwroot && ncp src/client/build/ src/server/Api/wwwroot"
   },
   "repository": {
     "type": "git",
@@ -19,5 +21,10 @@
   "bugs": {
     "url": "https://github.com/yunuskorkmaz/yu-pi/issues"
   },
-  "homepage": "https://github.com/yunuskorkmaz/yu-pi#readme"
+  "homepage": "https://github.com/yunuskorkmaz/yu-pi#readme",
+  "devDependencies": {
+    "ncp": "^2.0.0",
+    "rimraf": "^3.0.2"
+  },
+  "dependencies": {}
 }
