@@ -1,25 +1,30 @@
-import logo from './logo.svg';
-import './App.css';
+// import { useObserver } from 'mobx-react-lite';
+import { observer } from 'mobx-react-lite';
+import React, { useEffect, useState } from 'react';
+import { UseMainStore } from './stores/mainStore';
 
 function App() {
-  return (
+
+  const store = UseMainStore();
+  const [abc, setAbc] = useState("");
+
+  useEffect(() => {
+    console.log(store);
+  },[store.text])
+
+  const handleClick = () => {
+    store.setText(abc)
+  }
+  return  (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <input type="text" value={abc} onChange={e => setAbc(e.target.value)} />
+      <button onClick={() => handleClick()}>Kaydet</button>
+      <pre>
+        {JSON.stringify(store,null,2)}
+      </pre>
+      {store.textCom}
     </div>
-  );
+  ) 
 }
 
-export default App;
+export default observer(App);
