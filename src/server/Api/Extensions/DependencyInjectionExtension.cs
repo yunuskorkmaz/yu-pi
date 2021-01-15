@@ -1,4 +1,6 @@
+using Core.Services;
 using Microsoft.Extensions.DependencyInjection;
+using Services;
 
 namespace Api.Extensions
 {
@@ -6,7 +8,8 @@ namespace Api.Extensions
     {
         public static IServiceCollection AddAppDependencyInjection(this IServiceCollection services)
         {
-
+            services.AddScoped<IUserService,UserService>();
+            services.AddScoped<INgrokService,NgrokService>();
             return services;
         }
     }

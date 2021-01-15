@@ -1,0 +1,1 @@
+dotnet ef database update --startup-project src/server/Api/Api.csproj --project src/server/Infrastructure/Infrastructure.csproj

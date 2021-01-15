@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using Core.Entities;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 
@@ -17,14 +18,16 @@ namespace Api.Helpers
             Configuration = configuration;
         }
 
-        private IEnumerable<Claim> SetClaims(object model)
+        private IEnumerable<Claim> SetClaims(User model)
         {
             var claims = new List<Claim>();
-            // claims.Add(new Claim("email",model.Email));
+            claims.Add(new Claim("email",model.Email));
+            claims.Add(new Claim("name",model.Name));
+            claims.Add(new Claim("surname",model.Surname));
             return claims;
         }
 
-        public string CreateAccessToken(object model)
+        public string CreateAccessToken(User model)
         {
             SymmetricSecurityKey securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["Token:SecurityKey"]));
 
@@ -35,8 +38,7 @@ namespace Api.Helpers
                 audience: Configuration["Token:Audience"],
                 expires: DateTime.Now.AddMinutes(60),
                 notBefore: DateTime.Now,
-                signingCredentials: signingCredentials,
-                claims: SetClaims(model)
+                signingCredentials: signingCredentials
                 );
 
             JwtSecurityTokenHandler tokenHandler = new JwtSecurityTokenHandler();

@@ -1,0 +1,1 @@
+dotnet ef migrations remove --startup-project src/server/Api/Api.csproj --project src/server/Infrastructure/Infrastructure.csproj --verbose

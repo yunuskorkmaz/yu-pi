@@ -1,6 +1,8 @@
 using System;
 using System.IO;
 using System.Reflection;
+using Api.Filters;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
 
@@ -12,14 +14,24 @@ namespace Api.Extensions
         {
             return services.AddSwaggerGen(c =>
             {
-                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
-                {
-                    Description = "JWT Authorization header using the Bearer scheme (Example: 'Bearer 12345abcdef')",
-                    Name = "Authorization",
+                var securityScheme = new OpenApiSecurityScheme{
+                    Name = "JWT Auth",
+                    Description= "Enter JWT Bearer Token only",
                     In = ParameterLocation.Header,
-                    Type = SecuritySchemeType.ApiKey,
-                    Scheme = "Bearer"
+                    Type = SecuritySchemeType.Http,
+                    Scheme = "bearer",
+                    BearerFormat = "JWT",
+                    Reference = new OpenApiReference{
+                        Id = JwtBearerDefaults.AuthenticationScheme,
+                        Type = ReferenceType.SecurityScheme
+                    }
+                };
+                c.OperationFilter<AuthHeaderOperationFilter>();
+                c.AddSecurityDefinition(securityScheme.Reference.Id,securityScheme);
+                c.AddSecurityRequirement(new OpenApiSecurityRequirement{
+                    {securityScheme,new string[]{}}
                 });
+
                 var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
                 var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
                 c.IncludeXmlComments(xmlPath);

@@ -1,30 +1,30 @@
 // import { useObserver } from 'mobx-react-lite';
-import { observer } from 'mobx-react-lite';
-import React, { useEffect, useState } from 'react';
-import { UseMainStore } from './stores/mainStore';
+import { observer } from "mobx-react-lite";
+import React from "react";
+import { HashRouter, Route, Switch } from "react-router-dom";
+import AppLayout from "./layout";
+import routes from "./routes";
+
+import "./App.css";
 
 function App() {
+  var paths = [];
+  routes.map(
+    (route) =>
+      route.path != "/" &&
+      typeof route.path == "string" &&
+      paths.push(route.path.replace("/", ""))
+  );
 
-  const store = UseMainStore();
-  const [abc, setAbc] = useState("");
-
-  useEffect(() => {
-    console.log(store);
-  },[store.text])
-
-  const handleClick = () => {
-    store.setText(abc)
-  }
-  return  (
-    <div className="App">
-      <input type="text" value={abc} onChange={e => setAbc(e.target.value)} />
-      <button onClick={() => handleClick()}>Kaydet</button>
-      <pre>
-        {JSON.stringify(store,null,2)}
-      </pre>
-      {store.textCom}
-    </div>
-  ) 
+  return (
+      <HashRouter>
+        <Switch>
+          <Route path={`/(|${paths.join("|")})`} component={AppLayout} />
+          <Route path="/login" component={() => <>login</>} />
+          <Route component={() => <>404</>} />
+        </Switch>
+      </HashRouter>
+  );
 }
 
 export default observer(App);

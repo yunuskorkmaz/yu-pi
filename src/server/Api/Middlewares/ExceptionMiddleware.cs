@@ -30,7 +30,7 @@ namespace Api.Middlewares
                 {
                     context.Response.StatusCode = 400;
                     context.Response.ContentType = "application/json";
-                    await context.Response.WriteAsync(JsonConvert.SerializeObject(_mapper.Map<ApiExceptionResponse>(ex)));
+                    await context.Response.WriteAsJsonAsync(JsonConvert.SerializeObject(_mapper.Map<ApiExceptionResponse>(ex)));
                 }
                 else{
                     await context.Response.WriteAsync(JsonConvert.SerializeObject(ex));

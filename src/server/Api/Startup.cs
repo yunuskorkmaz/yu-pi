@@ -40,6 +40,15 @@ namespace App.Api
             services.AddJwtAuth(Configuration);
             services.AddAppDependencyInjection();
 
+            services.AddCors(options => {
+                options.AddDefaultPolicy(policy => {
+                    policy.AllowAnyHeader();
+                    policy.AllowAnyMethod();
+                    policy.AllowAnyOrigin();
+
+                });
+            });
+
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -57,8 +66,6 @@ namespace App.Api
 
             app.UseRouting();
 
-            app.UseAuthorization();
-
             app.UseAuthentication();
             app.UseAuthorization();
             
@@ -74,8 +81,7 @@ namespace App.Api
 
                 if (env.IsDevelopment())
                 {
-                    spa.Options.SourcePath = "../../client";
-                    spa.UseReactDevelopmentServer(npmScript: "start");
+                    spa.UseProxyToSpaDevelopmentServer("http://localhost:3000");
                 }
                 else
                 {

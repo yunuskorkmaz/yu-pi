@@ -1,0 +1,1 @@
+dotnet ef --startup-project src/server/Api/Api.csproj  migrations add $1 -p src/server/Infrastructure/Infrastructure.csproj --verbose 

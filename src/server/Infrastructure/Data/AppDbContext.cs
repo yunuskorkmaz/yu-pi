@@ -11,5 +11,7 @@ namespace Infrastructure.Data
         }
 
         public DbSet<User> Users { get; set; }
+        public DbSet<Tunnel> Tunnels { get; set; }
+
     }
 }

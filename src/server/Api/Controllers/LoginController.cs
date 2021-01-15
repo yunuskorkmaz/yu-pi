@@ -1,27 +1,34 @@
-using System;
-using System.Collections.Generic;
-using System.Reflection;
+using System.Threading.Tasks;
+using Api.Helpers;
 using App.Api.Controllers;
 using Core.Dtos.User;
+using Core.Services;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
+using Microsoft.Extensions.Configuration;
 
 namespace Api.Controllers
 {
     public class LoginController : BaseController
     {
-        /// <summary>
-        /// Login Uset and generated access_token
-        /// </summary>
-        /// <returns>Create access_token</returns>
-        /// <response code="200">Create access_token</response>
-        /// <response code="400">Return another error</response>
-        /// <response code="422">Model validation error</response>
-        [HttpPost]
-        [ProducesResponseType(typeof(LoginResponse), 200)]
-        public IActionResult Index(LoginRequest loginModel)
+        private readonly IConfiguration configuration;
+        private readonly IUserService userService;
+        public LoginController(IConfiguration _configuration, IUserService _userService)
         {
-            return Ok(JsonConvert.SerializeObject(new {}));
+            configuration = _configuration;
+            userService = _userService;
+        }
+
+        [HttpPost("/[controller]/")]
+        [ProducesResponseType(typeof(LoginResponse), 200)]
+        public async Task<ActionResult<LoginResponse>> Index(LoginRequest model)
+        {
+            var user = await userService.Login(model);
+            var tokenHandler = new TokenHelper(configuration);
+            var token = tokenHandler.CreateAccessToken(user);
+            var response = new LoginResponse(){
+                Token = token
+            };
+            return Ok(response);
         }
     }
 }

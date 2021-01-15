@@ -12,7 +12,7 @@ namespace Api.Extensions
         {
             var connectionString = DatabaseHelper.GetConnectionString(configuration);
 
-            return services.AddDbContext<AppDbContext>(opt => opt.UseInMemoryDatabase("app"));
+            return services.AddDbContext<AppDbContext>(opt => opt.UseNpgsql(connectionString));
         }
     }
 }
