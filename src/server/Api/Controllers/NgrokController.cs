@@ -30,5 +30,13 @@ namespace Api.Controllers
             return Ok(true);
         }
 
+        [HttpGet]
+        public async Task<ActionResult<List<NgrokModel>>> GetAll ()
+        {
+            var tunnels = await ngrokService.GetAll();
+            var response = mapper.Map<List<NgrokModel>>(tunnels);
+            return Ok(response);
+        }
+
     }
 }

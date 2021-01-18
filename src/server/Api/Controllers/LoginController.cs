@@ -18,9 +18,9 @@ namespace Api.Controllers
             userService = _userService;
         }
 
-        [HttpPost("/[controller]/")]
+        [HttpPost("/api/login")]
         [ProducesResponseType(typeof(LoginResponse), 200)]
-        public async Task<ActionResult<LoginResponse>> Index(LoginRequest model)
+        public async Task<ActionResult<LoginResponse>> Index([FromBody] LoginRequest model)
         {
             var user = await userService.Login(model);
             var tokenHandler = new TokenHelper(configuration);

@@ -1,51 +1,30 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Col, PageHeader, Row, Table } from "antd";
+import request from "../../utils/request";
 
 const NgrokPage = () => {
+
+  const [data, setData] = useState([]);
+
+  useEffect(() => {
+    getData()
+  },[])
+
+  const getData = async () => {
+    try {
+      const result = await request.get('ngrok/getAll');
+      setData(result);
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
   const columns = [
     {
-      title: "Name",
-      dataIndex: "name",
-      key: "name",
-    },
-    {
-      title: "Age",
-      dataIndex: "age",
-      key: "age",
-    },
-    {
-      title: "Address",
-      dataIndex: "address",
-      key: "address",
-    },
-    {
-      title: "Tags",
-      key: "tags",
-      dataIndex: "tags",
-    },
-  ];
-  const data = [
-    {
-      key: "1",
-      name: "John Brown",
-      age: 32,
-      address: "New York No. 1 Lake Park",
-      tags: ["nice", "developer"],
-    },
-    {
-      key: "2",
-      name: "Jim Green",
-      age: 42,
-      address: "London No. 1 Lake Park",
-      tags: ["loser"],
-    },
-    {
-      key: "3",
-      name: "Joe Black",
-      age: 32,
-      address: "Sidney No. 1 Lake Park",
-      tags: ["cool", "teacher"],
-    },
+      title: "URL",
+      dataIndex: "url",
+      key: "url",
+    }
   ];
   return (
     <>
@@ -54,8 +33,8 @@ const NgrokPage = () => {
       />
       <div style={{ margin: "20px" }}>
         <Row justify="center">
-          <Col xs={22}>
-            <Table size="middle" columns={columns} dataSource={data} pagination={false} />
+          <Col xs={24}>
+            <Table size="middle" columns={columns} dataSource={data} pagination={false} rowKey={"url"} />
           </Col>
         </Row>
       </div>

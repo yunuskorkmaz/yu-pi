@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Core.Dtos.Ngrok;
 using Core.Entities;
@@ -6,6 +7,7 @@ using Core.Exceptions;
 using Core.Services;
 using Infrastructure.Data;
 using Infrastructure.Extensions;
+using Microsoft.EntityFrameworkCore;
 
 namespace Services
 {
@@ -16,6 +18,19 @@ namespace Services
         {
             context = _context;
         }
+
+        public async Task<List<Tunnel>> GetAll()
+        {
+            try
+            {
+                return await context.Tunnels.ToListAsync();
+            }
+            catch (Exception e)
+            {
+                throw new ApiException("ngrok.tunnelsGetAllError");;
+            }
+        }
+
         public async Task<bool> Update(Tunnel model)
         {
             try
@@ -31,5 +46,7 @@ namespace Services
             }
             
         }
+
+        
     }
 }
