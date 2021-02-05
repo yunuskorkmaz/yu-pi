@@ -4,6 +4,7 @@ import { Layout } from "antd";
 import AppSider from "./AppSider";
 import { Route, Switch } from "react-router-dom";
 import NgrokPage from "../pages/ngrok";
+import AgentService from "../pages/agentService";
 
 const { Header, Content } = Layout;
 
@@ -28,6 +29,7 @@ const AppLayout = () => {
           <Switch>
               <Route path="/" exact render={() => <>Home</>} />
               <Route path="/ngrok" component={NgrokPage} />
+              <Route path="/agentService" component={AgentService} />
           </Switch>
         </Content>
       </Layout>

@@ -10,6 +10,7 @@ namespace Api.Extensions
         {
             services.AddScoped<IUserService,UserService>();
             services.AddScoped<INgrokService,NgrokService>();
+            services.AddSingleton<AblyClientService,AblyClientService>();
             return services;
         }
     }

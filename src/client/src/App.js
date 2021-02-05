@@ -20,7 +20,7 @@ function App() {
             <PrivateRoute
               exact
               path={item.path}
-              component={AppLayout}
+              component={() => <AppLayout />}
               key={item.path}
             />
           ))}

@@ -27,6 +27,7 @@ const post = (path,data,auth = true) => {
             reject();
         }else if(result.status === 401){
             message.error('Not Found Session')
+            browserHistory.push("/login")
             reject();
         }
         else{
@@ -51,7 +52,8 @@ const get = (path,auth = true) => {
         });
         if(result.status === 401){
             message.error('Not Found Session')
-            reject();
+            localStorage.removeItem('app_token')
+            reject(401);
         }
         else{
             resolve(await result.json());

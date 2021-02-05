@@ -3,6 +3,7 @@ import { DesktopOutlined, TeamOutlined } from "@ant-design/icons";
 
 const routes = [
 	{ path: "/ngrok"},
+	{ path: "/agentService"},
 	{ path: "/"},
 ];
 
@@ -12,6 +13,11 @@ export const menu = [
 	{
 		name: "Ana Sayfa",
 		url: "/",
+		icon: <DesktopOutlined />,
+	},
+	{
+		name: "Agent Service",
+		url: "/agentService",
 		icon: <DesktopOutlined />,
 	},
 	// {

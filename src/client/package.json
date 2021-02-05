@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "@ant-design/icons": "^4.3.0",
+    "@microsoft/signalr": "^5.0.2",
     "antd": "^4.10.2",
     "mobx": "^6.0.4",
     "mobx-react-lite": "^3.1.6",
