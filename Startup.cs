@@ -9,6 +9,8 @@ using MediatR;
 using yu_pi.Infrastructure.Validation;
 using FluentValidation.AspNetCore;
 using AutoMapper;
+using yu_pi.Infrastructure.Errors;
+using yu_pi.Services;
 
 namespace yu_pi
 {
@@ -21,30 +23,43 @@ namespace yu_pi
 
         public IConfiguration Configuration { get; }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddMediatR(Assembly.GetExecutingAssembly());
-            services.AddTransient(typeof(IPipelineBehavior<,>),typeof(ValidationPipelineBehavior<,>));
-            
-            services.AddMvc( opt => {
+
+            services.AddSingleton<AblyClientService, AblyClientService>();
+            services.AddHostedService<YupiBackgroundService>();
+
+            services.AddYupiContext(Configuration);
+            services.AddAutoMapper(GetType().Assembly);
+            services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationPipelineBehavior<,>));
+            services.AddCustomSwagger();
+            services.AddCors();
+            services.AddMvc(opt =>
+            {
                 opt.Filters.Add(typeof(ValidatorActionFilter));
                 opt.EnableEndpointRouting = false;
-            }).AddJsonOptions(opt => {
+            })
+            .AddJsonOptions(opt =>
+            {
                 opt.JsonSerializerOptions.IgnoreNullValues = true;
-            }).AddFluentValidation( opt => {
+            })
+            .AddFluentValidation(opt =>
+            {
                 opt.RegisterValidatorsFromAssemblyContaining<Startup>();
             });
-            services.AddAutoMapper(GetType().Assembly);
 
-            // In production, the React files will be served from this directory
+
             services.AddSpaStaticFiles(configuration =>
             {
                 configuration.RootPath = "ClientApp/build";
             });
+
+            services.AddJwt(Configuration);
+            services.AddMediatR(Assembly.GetExecutingAssembly());
+
+
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
@@ -54,9 +69,18 @@ namespace yu_pi
             else
             {
                 app.UseExceptionHandler("/Error");
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
+
+            app.UseMiddleware<ErrorHandlingMiddleware>();
+
+            app.UseCors(builder =>
+               builder
+                   .AllowAnyOrigin()
+                   .AllowAnyHeader()
+                   .AllowAnyMethod()
+                );
+            app.UseAuthentication();
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
@@ -70,6 +94,16 @@ namespace yu_pi
                     name: "default",
                     pattern: "{controller}/{action=Index}/{id?}");
             });
+
+            app.UseSwagger(c =>
+           {
+               c.RouteTemplate = "swagger/{documentName}/swagger.json";
+           });
+
+            app.UseSwaggerUI(x =>
+           {
+               x.SwaggerEndpoint("/swagger/v1/swagger.json", "RealWorld API V1");
+           });
 
             app.UseSpa(spa =>
             {
