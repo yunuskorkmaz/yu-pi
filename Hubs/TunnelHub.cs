@@ -33,7 +33,7 @@ namespace yu_pi.Hubs
         public async Task AddTunnel(CreateTunnelCommand tunnel){
             Console.WriteLine(JsonConvert.SerializeObject(tunnel));
             var result = await mediator.Send(tunnel);
-            await Clients.All.SendAsync("tunnelAdded",tunnel);
+            await Clients.All.SendAsync("tunnelAdded",result);
         }
     }
 }

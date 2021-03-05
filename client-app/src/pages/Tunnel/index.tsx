@@ -1,7 +1,8 @@
 import { HubConnection, HubConnectionBuilder } from '@microsoft/signalr';
-import { Modal, Table, Form, Input, Select, Card, Button } from 'antd';
+import { Modal, Table, Form, Input, Select, Card, Button, Tag } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
 import React, { useEffect, useState } from 'react';
+import { Tunnel, TunnelStatus } from '../../models/Tunnel';
 
 
 
@@ -29,6 +30,7 @@ const TunnelPage = () => {
 
         connection.on('tunnelAdded', tunnel => {
             setRefresh(false);
+            setModal(false);
             console.log("added", tunnel)
             setData([...data, tunnel])
         })
@@ -50,7 +52,7 @@ const TunnelPage = () => {
         setModal(true);
     }
 
-    const columns: ColumnsType<any> = [
+    const columns: ColumnsType<Tunnel> = [
         {
             title: 'Name',
             dataIndex: 'name',
@@ -74,7 +76,24 @@ const TunnelPage = () => {
         {
             title: 'status',
             dataIndex: 'status',
-            key: 'status'
+            key: 'status',
+            render: (value: TunnelStatus,record : Tunnel) => {
+                let color = '#fff';
+                switch (value) {
+                    case TunnelStatus.Preparing:
+                        color = 'blue';
+                        break;
+                    case TunnelStatus.Active:
+                        color = 'green';
+                        break;
+                    case TunnelStatus.Passive:
+                        color = 'red';
+                        break;
+                }
+                return <>
+                    <Tag color={color}>{TunnelStatus[value]}</Tag>
+                </>
+            }
         }, {
             title: 'actions',
             dataIndex: '',

@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using yu_pi.Domain.Enums;
 
 namespace yu_pi.Domain.Entities
 {
@@ -11,7 +12,7 @@ namespace yu_pi.Domain.Entities
         public string Name { get; set; }
         public string Protokol { get; set; }
         public string Port { get; set; }
-        public string publicUrl { get; set; }
-        public string Status { get; set; }
+        public string PublicUrl { get; set; }
+        public int Status { get; set; }
     }
 }
