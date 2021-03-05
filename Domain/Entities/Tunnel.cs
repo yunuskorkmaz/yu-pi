@@ -9,7 +9,9 @@ namespace yu_pi.Domain.Entities
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
         public string Name { get; set; }
-        public string PublicUrl { get; set; }
-        public string Proto { get; set; }
+        public string Protokol { get; set; }
+        public string Port { get; set; }
+        public string publicUrl { get; set; }
+        public string Status { get; set; }
     }
 }

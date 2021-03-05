@@ -2,11 +2,13 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using IO.Ably.Realtime;
 using MediatR;
 using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json;
+using yu_pi.Domain.Commands.Tunnels;
+using yu_pi.Domain.Entities;
 using yu_pi.Features.Ngrok;
-using yu_pi.Features.User;
 
 namespace yu_pi.Services
 {
@@ -14,6 +16,8 @@ namespace yu_pi.Services
     {
         private readonly AblyClientService ably;
         private readonly IMediator mediator;
+
+        private IRealtimeChannel tunnelChannel { get; set;}
         public YupiBackgroundService(AblyClientService _ably, IMediator _meditor)
         {
             ably = _ably;
@@ -21,34 +25,33 @@ namespace yu_pi.Services
         }
         public Task StartAsync(CancellationToken cancellationToken)
         {
-            return Task.Run(() => RegisterChannels());
+            RegisterChannels();
+            InitializeSubscribers();
+            return Task.CompletedTask;
+        }
+
+        private void InitializeSubscribers()
+        {
+            // tunnelChannel.Subscribe("register", async (message) => {
+            //     var data = JsonConvert.DeserializeObject<CreateTunnelCommand>(message.Data.ToString());
+            //     await mediator.Send(data);
+            // });
         }
 
         private void RegisterChannels()
         {
-            var ngrokChannel = ably.Client.Channels.Get("ngrok-tunnels");
-            ngrokChannel.Subscribe("register", async (message) =>
-            {
-                var data = JsonConvert.DeserializeObject<List<Ngrok.TunnelModel>>(message.Data.ToString());
-                // var result = await mediator.Send(new Login.LoginCommand()
-                // {
-                //     Email = "yunuskorkmaz95@gmail.com",
-                //     Password = "123123123"
-                // });
-                // Console.WriteLine(JsonConvert.SerializeObject(result));
-                await mediator.Send(new Ngrok.TunnelRegisterCommand{ Tunnels = data });
-                Console.WriteLine(JsonConvert.SerializeObject(message.Data));
-            });
+            tunnelChannel = ably.Client.Channels.Get("tunnels");
         }
 
         public Task StopAsync(CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            ably.Client.Close();
+            return Task.CompletedTask; 
         }
 
         public void Dispose()
         {
-            throw new NotImplementedException();
+            ably.Client.Close();
         }
     }
 }

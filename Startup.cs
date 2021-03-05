@@ -11,6 +11,7 @@ using FluentValidation.AspNetCore;
 using AutoMapper;
 using yu_pi.Infrastructure.Errors;
 using yu_pi.Services;
+using yu_pi.Hubs;
 
 namespace yu_pi
 {
@@ -48,14 +49,14 @@ namespace yu_pi
                 opt.RegisterValidatorsFromAssemblyContaining<Startup>();
             });
 
-
             services.AddSpaStaticFiles(configuration =>
             {
-                configuration.RootPath = "ClientApp/build";
+                configuration.RootPath = "client-app/build";
             });
 
             services.AddJwt(Configuration);
             services.AddMediatR(Assembly.GetExecutingAssembly());
+            services.AddSignalR();
 
 
         }
@@ -74,15 +75,14 @@ namespace yu_pi
 
             app.UseMiddleware<ErrorHandlingMiddleware>();
 
-            app.UseCors(builder =>
-               builder
-                   .AllowAnyOrigin()
-                   .AllowAnyHeader()
-                   .AllowAnyMethod()
-                );
+            app.UseCors(options =>
+            {
+                options.WithOrigins("http://localhost:3000").AllowAnyMethod().AllowCredentials().AllowAnyHeader();
+
+            });
             app.UseAuthentication();
 
-            app.UseHttpsRedirection();
+            // app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseSpaStaticFiles();
 
@@ -93,6 +93,7 @@ namespace yu_pi
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller}/{action=Index}/{id?}");
+                endpoints.MapHub<TunnelHub>("tunnelHub");
             });
 
             app.UseSwagger(c =>
@@ -105,15 +106,19 @@ namespace yu_pi
                x.SwaggerEndpoint("/swagger/v1/swagger.json", "RealWorld API V1");
            });
 
-            app.UseSpa(spa =>
+            if (!env.IsDevelopment())
             {
-                spa.Options.SourcePath = "ClientApp";
-
-                if (env.IsDevelopment())
+                app.UseSpa(spa =>
                 {
-                    spa.UseReactDevelopmentServer(npmScript: "start");
-                }
-            });
+                    spa.Options.SourcePath = "client-app";
+
+                    // if (env.IsDevelopment())
+                    // {
+                    //     // spa.UseProxyToSpaDevelopmentServer("http://localhost:3000/");
+                    //     // spa.UseReactDevelopmentServer(npmScript: "start");
+                    // }
+                });
+            }
         }
     }
 }

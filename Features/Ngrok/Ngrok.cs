@@ -18,6 +18,7 @@ namespace yu_pi.Features.Ngrok
             public string Name { get; set; }
             public string PublicUrl { get; set; }
             public string Proto { get; set; }
+            public string LocalAddress { get; set; }
         }
 
         public class TunnelRegisterCommand : IRequest<string>
