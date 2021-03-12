@@ -10,6 +10,7 @@ using yu_pi.Infrastructure.Context;
 using AutoMapper;
 using yu_pi.Domain.Enums;
 using yu_pi.Services;
+using Newtonsoft.Json;
 
 namespace yu_pi.Domain.Commands.Tunnels
 {
@@ -38,7 +39,7 @@ namespace yu_pi.Domain.Commands.Tunnels
                 request.PublicUrl = "";
                 await context.Tunnels.AddAsync(request);
                 var result = await context.SaveChangesAsync();
-                await ably.Client.Channels.Get("tunnels").PublishAsync("tunnelAdded",result);
+                await ably.Client.Channels.Get("tunnels").PublishAsync("tunnelAdded",JsonConvert.SerializeObject(request));
                 if (Convert.ToBoolean(result))
                 {
                     var tunnel = mapper.Map<Tunnel>(request);

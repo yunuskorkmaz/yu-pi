@@ -1,47 +1,16 @@
-import { HubConnection, HubConnectionBuilder } from '@microsoft/signalr';
 import { Modal, Table, Form, Input, Select, Card, Button, Tag } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
+import { observer } from 'mobx-react-lite';
 import React, { useEffect, useState } from 'react';
 import { Tunnel, TunnelStatus } from '../../models/Tunnel';
+import { TunnelStore } from '../../store/tunnelStore';
 
+const tunnelStore = new TunnelStore();
 
-
-const TunnelPage = () => {
-    const [hubConnection, setHubConnection] = useState<HubConnection>();
-    const [data, setData] = useState<Array<any>>([]);
-    const [refresh, setRefresh] = useState(false);
+const TunnelPage = observer(() => {
+    const [store] = useState<TunnelStore>(tunnelStore);
     const [modal, setModal] = useState(false)
     const [form] = Form.useForm()
-
-    useEffect(() => {
-        setupSignalRConnection('tunnelHub');
-    }, [])
-
-    const setupSignalRConnection = async (hubName: string) => {
-        const connection = new HubConnectionBuilder()
-            .withUrl(process.env.REACT_APP_REST_URL + hubName)
-            .withAutomaticReconnect()
-            .build();
-
-        connection.on('onConnected', (data: Array<any>) => {
-            console.log('connected', data)
-            setData(data)
-        })
-
-        connection.on('tunnelAdded', tunnel => {
-            setRefresh(false);
-            setModal(false);
-            console.log("added", tunnel)
-            setData([...data, tunnel])
-        })
-
-        try {
-            await connection.start();
-            setHubConnection(connection);
-        } catch (error) {
-            console.log(error);
-        }
-    }
 
     const openEdit = (record: any) => {
         form.setFieldsValue(record)
@@ -52,7 +21,7 @@ const TunnelPage = () => {
         setModal(true);
     }
 
-    const columns: ColumnsType<Tunnel> = [
+    const columns: ColumnsType<any> = [
         {
             title: 'Name',
             dataIndex: 'name',
@@ -77,7 +46,7 @@ const TunnelPage = () => {
             title: 'status',
             dataIndex: 'status',
             key: 'status',
-            render: (value: TunnelStatus,record : Tunnel) => {
+            render: (value: TunnelStatus, record: Tunnel) => {
                 let color = '#fff';
                 switch (value) {
                     case TunnelStatus.Preparing:
@@ -101,6 +70,7 @@ const TunnelPage = () => {
             render: (value: any, record: any) => {
                 return <>
                     <Button size="small" onClick={() => openEdit(record)} >Edit</Button>
+                    <Button size="small" onClick={() =>  store.closeTunnel(record)} >Delete</Button>
                 </>
             }
         }
@@ -108,18 +78,19 @@ const TunnelPage = () => {
     ]
 
     const onFinish = (values: any) => {
-        console.log(values);
-        if (hubConnection) {
-            hubConnection.send('AddTunnel', values);
-            setRefresh(true);
-        }
+        store.addTunnel(values);
+        setModal(false);
     }
 
     return (
         <>
             <div style={{ padding: '20px' }}>
-                <Card extra={<Button size="small" onClick={() => openAdd()}>Ekle</Button>}> 
-                    <Table columns={columns} dataSource={data} rowKey="id" loading={refresh} pagination={false} bordered={false} size={"small"} />
+                <Card extra={
+                    <>
+                        <Button size="small" onClick={() => openAdd()}>Ekle</Button>
+                        {/* <Button size="small" onClick={() => store.closeAll()}>Ekle</Button> */}
+                    </>}>
+                    <Table rowKey={record =>  '_' + Math.random().toString(36).substr(2, 9)} columns={columns} dataSource={[...store.tunnels]} pagination={false} bordered={false} size={"small"} />
                 </Card>
 
             </div>
@@ -151,6 +122,6 @@ const TunnelPage = () => {
             </Modal>
         </>
     )
-}
+})
 
 export default TunnelPage;
